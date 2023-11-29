@@ -3,7 +3,7 @@ import logging
 from aiogram import Dispatcher, types, Bot
 from aiogram.enums import ParseMode
 
-from app.message_storage import MESSAGE_STORAGE
+from app.rabbit_queue import RABBIT_QUEUE
 
 from dotenv import load_dotenv
 
@@ -17,10 +17,10 @@ logger = logging.getLogger(__name__)
 
 @dp.message()
 async def echo_handler(
-        message: types.Message,
+    message: types.Message,
 ) -> None:
     logger.info(msg=f"Received message from bot: {message.text}")
-    MESSAGE_STORAGE.message = message.text
+    await RABBIT_QUEUE.send_message_to_queue(message.text)
 
 
 async def create_bot(token: str) -> Bot:
